@@ -6,13 +6,17 @@
 }
 
 *{
-    font-family: "Charm";
-    font-size: 20px;
+    font-family: "Arial", "Charm";
+    color: #FFFFFF;
+    text-shadow: black 0px 0px 4px;
+    font-size: 18px;
 
-    --page-background-color: #AAAAAA;
-    --button-normal-color: #AAAAAA;
-    --button-highlight-color: #CCCCCC;
-    --main-background-color: #DDDDDD;
+    --page-background-color: #AAAAAF;
+    --button-normal-color: #77777F;
+    --button-highlight-color: #AAAAAF;
+    --button-disabled-color: #666669;
+    --main-background-color: #555559;
+    --bar-background-color: #333337;
 }
 
 html {
@@ -20,13 +24,33 @@ html {
 }
 
 button {
-    transition: background 0.25s;
+    transition: background 0.25s, color 0.25s;
     background-color: var(--button-normal-color);
+
+    border: none;
+    border-radius: 4px;
+    outline: 1px solid black;
 }
 
-button:hover {
+button:enabled:hover {
     cursor: pointer;
     background-color: var(--button-highlight-color);
+}
+
+button:disabled {
+    color: #FFFFFFAA;
+    background-color: var(--button-disabled-color);
+}
+
+img { 
+    image-rendering: optimizeSpeed;             /* STOP SMOOTHING, GIVE ME SPEED  */
+    image-rendering: -moz-crisp-edges;          /* Firefox                        */
+    image-rendering: -o-crisp-edges;            /* Opera                          */
+    image-rendering: -webkit-optimize-contrast; /* Chrome (and eventually Safari) */
+    image-rendering: pixelated;                 /* Universal support since 2021   */
+    image-rendering: optimize-contrast;         /* CSS3 Proposed                  */
+    -ms-interpolation-mode: nearest-neighbor;   /* IE8+                           */
+
 }
 
 /* Class Styles */
@@ -41,7 +65,7 @@ button:hover {
 }
 
 .game_tab_select {
-    transition: background 0.25s, height 0.5s, transform 0.5s, flex-grow 0.2s;
+    transition: background 0.25s, color 0.25s, height 0.5s, transform 0.5s, flex-grow 0.2s;
 
     flex-grow: 1;
     text-align: center;
@@ -51,10 +75,6 @@ button:hover {
     margin-right: 8px;
 
     height: 100%;
-
-    border: none;
-    border-radius: 2px;
-    outline: 1px solid black;
 }
 
 .game_tab_select[data-selected=true] {
@@ -66,6 +86,66 @@ button:hover {
     height: 110%;
     transform: translateY(-5%);
 }
+
+.dungeon_background {
+    outline: 1px solid black;
+    height: 64px;
+    width: 64px;
+}
+
+.fill_bar_base {
+    outline: 1px solid black;
+}
+
+div > .fill_bar {
+    width: calc(100% * var(--percent));
+    height: 100%;
+
+    border-radius: 4px;
+    transition: width 0.2s;
+}
+
+.upgrade_button {
+    width: 160px;
+    height: 160px;
+    margin: 4px;
+
+    border-radius: 4px;
+}
+
+.upgrade_button > .upgrade_title {
+    display: inline-block;
+    position: relative;
+    vertical-align: top;
+    font-weight: bold;
+    width: 100%;
+}
+
+.upgrade_button > .upgrade_level {
+    position: relative;
+    vertical-align: top;
+
+    font-size: 60%;
+    margin-top: -2px;
+    margin-bottom: 2px;
+}
+
+.upgrade_button .upgrade_description, .upgrade_button > .upgrade_effect, .upgrade_button > .upgrade_cost {
+    display: inline-block;
+    position: relative;
+
+    font-size: 70%;
+    line-height: 125%;
+}
+
+.upgrade_button > .upgrade_effect {
+    padding-top: 8px;
+}
+
+.upgrade_button > .upgrade_cost {
+    font-weight: bold;
+}
+
 
 /* ID Styles */
 
@@ -81,13 +161,14 @@ button:hover {
 
 #main_div {
     position: absolute;
-    margin-top: calc(-1vh);
     margin-left: calc(50% - 384px);
     margin-right: calc(50% - 384px);
 
     width: 768px;
-    height: 100vh;
-    outline: 2px solid black;
+    height: calc(98vh);
+    outline: 1px solid black;
+
+    border-radius: 4px;
 
     background-color: var(--main-background-color);
 }
@@ -97,7 +178,7 @@ button:hover {
     text-align: center;
     font-size: 150%;
     width: 100%;
-    height: 96px;
+    height: 64px;
 }
 
 #title-text span {
@@ -106,6 +187,54 @@ button:hover {
     animation: text_wave 10s infinite;
     animation-timing-function: linear;
     animation-delay: calc(-0.5s * var(--i));
+}
+
+#tab_main {
+    justify-content: center;
+}
+
+#dungeon_tiles {
+    display: inline-flex;
+    justify-content: center;
+    width: 100%;
+    height: 64px;
+}
+
+#run_player_icon {
+    position: absolute;
+    margin-left: calc(64px + 64px * var(--progress));
+
+    transition: margin-left 0.25s;
+    transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+#start_run_button {
+    width: 90%;
+
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+#player_stats_container {
+    margin-left: 64px;
+    margin-top: 4px;
+    width: calc(50% - 64px);
+    align-content: left;
+}
+
+#courage_bar {
+    height: 32px;
+    background-color: var(--bar-background-color);
+    border-radius: 4px;
+}
+
+#basic_upgrade_container {
+    display: flex;
+    justify-content: center;
+
+    flex-wrap: wrap;
 }
 
 /* Other */

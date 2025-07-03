@@ -12,9 +12,8 @@
             <div id="title_div">
                 <div id="title-text" style="font-weight: bold;">
                     <span style="--i:0">C</span><span style="--i:1">A</span><span style="--i:2">V</span><span style="--i:3">E</span><span style="--i:4">R</span><span style="--i:5">N</span> <span style="--i:6">C</span><span style="--i:7">R</span><span style="--i:8">A</span><span style="--i:9">W</span><span style="--i:10">L</span><span style="--i:11">E</span><span style="--i:12">R</span>
-                    <span style="--i:13; font-size: 75%; font-weight: bold;">(v0.0.1)</span>
+                    <span style="--i:13; font-size: 75%; font-weight: bold;">(v0.0.2)</span>
                 </div>
-                <div style="font-size: 75%">by oreiboon</div>
             </div>
 
             <div class="seperator"></div>
@@ -38,10 +37,51 @@
 
             <div id="game_tab_container">
                 <div id="tab_main">
+                    <button id="start_run_button">Start Run</button>
+                    <div class="seperator"></div>
+                    <div id="floor_record_text" style="text-align: center;"></div>
+                    <div id="active_run_container" style="display: none;">
+                        <div id="active_run_info" style="text-align: center;">Floor 1 - 0/10</div>
+                        <div id="dungeon_container">
+                            <span id="run_player_icon" style="--progress: 0;">
+                                <img src="images/player_icon.png">
+                            </span>
+
+                            <div id="dungeon_tiles">
+                                <img class="dungeon_background" src="images/dungeon_wall.png">
+                                <img class="dungeon_background" src="images/dungeon_wall.png">
+                                <img class="dungeon_background" src="images/dungeon_wall.png">
+                                <img class="dungeon_background" src="images/dungeon_wall.png">
+                                <img class="dungeon_background" src="images/dungeon_wall.png">
+                                <img class="dungeon_background" src="images/dungeon_wall.png">
+                                <img class="dungeon_background" src="images/dungeon_wall.png">
+                                <img class="dungeon_background" src="images/dungeon_wall.png">
+                                <img class="dungeon_background" src="images/dungeon_wall.png">
+                                <img class="dungeon_background" src="images/dungeon_wall.png">
+                            </div>
+
+                            <div id="player_stats_container">
+                                Your Stats:
+                                <div class="fill_bar_base" id="courage_bar">
+                                    <span id="courage_bar_text" style="position: absolute; margin-left: 4px;">Courage: 10/10</span>
+                                    <div class="fill_bar" style="--percent: 0.5; background-color: rgb(214, 114, 64);"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 <div id="tab_upgrades" style="display: none;">
                     <div style="text-align: center; font-size: 75%;">(Upgrades bought apply on the next run!)</div>
+                    <div id="basic_upgrade_container">
+                        <button class="upgrade_button">
+                            <div class="upgrade_title">Torch</div>
+                            <div class="upgrade_level">(0/1)</div>
+                            <div class="upgrade_description">You should probably carry a light source with you. Slows down courage loss.</div>
+                            <div class="upgrade_effect">Effect: +0.00 Courage/s</div>
+                            <div class="upgrade_cost">-0.50 Research</div>
+                        </button>
+                    </div>
                 </div>
 
                 <div id="tab_settings" style="display: none;">
