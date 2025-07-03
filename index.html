@@ -1,11 +1,57 @@
 <html>
-    <script src="/scripts/main.js"></script>
-    <link rel="stylesheet" href="style.css"></link>
+    <script src="scripts/main.js"></script>
+    <script src="scripts/stat_calculator.js"></script>
+    <link rel="stylesheet" href="style.css">
+
+    <audio id="click-sound">
+        <source src="sounds/click.wav" type="audio/wav">
+    </audio> 
+
     <body>
         <div id="main_div">
             <div id="title_div">
-                <b>CAVERN CRAWLER</b> <b style="font-size: 75%;">(v0.1)</b>
-                <div style="font-size: 50%">by oreiboon</div>
+                <div id="title-text" style="font-weight: bold;">
+                    <span style="--i:0">C</span><span style="--i:1">A</span><span style="--i:2">V</span><span style="--i:3">E</span><span style="--i:4">R</span><span style="--i:5">N</span> <span style="--i:6">C</span><span style="--i:7">R</span><span style="--i:8">A</span><span style="--i:9">W</span><span style="--i:10">L</span><span style="--i:11">E</span><span style="--i:12">R</span>
+                    <span style="--i:13; font-size: 75%; font-weight: bold;">(v0.0.1)</span>
+                </div>
+                <div style="font-size: 75%">by oreiboon</div>
+            </div>
+
+            <div class="seperator"></div>
+
+            <div id="game_tab_select_container">
+                <button id="select_tab_main" class="game_tab_select" data-selected=true onclick="changetab('main')">Main</button>
+                <button id="select_tab_upgrades" class="game_tab_select" style="display: none;" onclick="changetab('upgrades')">Upgrades</button>
+                <button id="select_tab_prestige" class="game_tab_select" style="display: none;" onclick="changetab('prestige')">Prestige</button>
+                <button id="select_tab_settings" class="game_tab_select" onclick="changetab('settings')">Settings</button>
+            </div>
+
+            <div class="seperator"></div>
+
+            <div id="currency_display" style="text-align: center;">
+                <div id="research_display">
+                    Research: 0
+                </div>
+            </div>
+
+            <div class="seperator"></div>
+
+            <div id="game_tab_container">
+                <div id="tab_main">
+                </div>
+                
+                <div id="tab_upgrades" style="display: none;">
+                    <div style="text-align: center; font-size: 75%;">(Upgrades bought apply on the next run!)</div>
+                </div>
+
+                <div id="tab_settings" style="display: none;">
+                    <div style="text-align: center;">
+                        Music <input type="checkbox">
+                    </div>
+                    <div style="text-align: center;">
+                        Dark Mode <input type="checkbox">
+                    </div>
+                </div>
             </div>
         </div>
     </body>

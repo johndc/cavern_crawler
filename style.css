@@ -1,14 +1,87 @@
+/* Element/Generic Styles */
+
+@font-face {
+  font-family: "Charm";
+  src: url("fonts/Charm-Regular.ttf");
+}
+
 *{
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: "Charm";
+    font-size: 20px;
+
+    --page-background-color: #AAAAAA;
+    --button-normal-color: #AAAAAA;
+    --button-highlight-color: #CCCCCC;
+    --main-background-color: #DDDDDD;
 }
 
 html {
-    background-color: #AAAAB0;
+    background-color: var(--page-background-color);
+}
+
+button {
+    transition: background 0.25s;
+    background-color: var(--button-normal-color);
+}
+
+button:hover {
+    cursor: pointer;
+    background-color: var(--button-highlight-color);
+}
+
+/* Class Styles */
+
+.seperator {
+    width: 90%;
+    height: 2px;
+    margin-left: 5%;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    background-image: linear-gradient(to right, #00000000, #00000044, #00000000);
+}
+
+.game_tab_select {
+    transition: background 0.25s, height 0.5s, transform 0.5s, flex-grow 0.2s;
+
+    flex-grow: 1;
+    text-align: center;
+    display: block;
+
+    margin-left: 8px;
+    margin-right: 8px;
+
+    height: 100%;
+
+    border: none;
+    border-radius: 2px;
+    outline: 1px solid black;
+}
+
+.game_tab_select[data-selected=true] {
+    font-weight: bold;
+}
+
+.game_tab_select:hover {
+    flex-grow: 1.05;
+    height: 110%;
+    transform: translateY(-5%);
+}
+
+/* ID Styles */
+
+#game_tab_select_container {
+    display: flex;
+    justify-content: center;
+
+    height: 32px;
+    width: 100%;
+    padding-top: 4px;
+    padding-bottom: 4px;
 }
 
 #main_div {
     position: absolute;
-    margin-top: calc(-1vh + 2px);
+    margin-top: calc(-1vh);
     margin-left: calc(50% - 384px);
     margin-right: calc(50% - 384px);
 
@@ -16,13 +89,41 @@ html {
     height: 100vh;
     outline: 2px solid black;
 
-    background-color: #DDDDE0;
+    background-color: var(--main-background-color);
 }
 #title_div {
+    padding-top: 4px;
     align-content: center;
     text-align: center;
-    font-size: 200%;
+    font-size: 150%;
     width: 100%;
-    height: 10%;
-    outline: 2px solid black;
+    height: 96px;
+}
+
+#title-text span {
+    display: inline-block;
+    font-size: 150%;
+    animation: text_wave 10s infinite;
+    animation-timing-function: linear;
+    animation-delay: calc(-0.5s * var(--i));
+}
+
+/* Other */
+
+@keyframes text_wave {
+  0%,50%,100% {
+    transform: translateY(0);
+  }
+  12.5%,37.5% {
+    transform: translateY(-1.5px);
+  }
+  25% {
+    transform: translateY(-2px);
+  }
+  62.5%,87.5% {
+    transform: translateY(1.5px);
+  }
+  75% {
+    transform: translateY(2px);
+  }
 }
