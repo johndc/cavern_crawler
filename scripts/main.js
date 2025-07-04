@@ -895,7 +895,6 @@ function end_run(data) {
 
     if (data.persist.unlocks.upgrades != true) {
         data.persist.unlocks.upgrades = true
-        document.getElementById("select_tab_upgrades").style.display = "block";
     }
 
     data.persist.currencies.research += calculate_research_gain(data)
@@ -950,7 +949,13 @@ function game_tick(data) {
                             }
                         }
 
-                        append_enemy(data, 1, 1 * Math.pow(2, data.non_persist.run.floor - 1), Math.floor(Math.pow(2, (data.non_persist.run.floor - 1) / 1.5)), Math.floor((data.non_persist.run.floor - 1) / 4), 1, "images/enemy_slime_icon.png")
+                        if (data.non_persist.run.floor > 5) {
+                            if (data.persist.unlocks.prestige != true) {
+                                data.persist.unlocks.prestige = true
+                            }
+                        }
+
+                        append_enemy(data, 1, 1 * Math.pow(2, (data.non_persist.run.floor - 1) / 1.2), Math.floor(Math.pow(2, (data.non_persist.run.floor - 1) / 1.67)), Math.floor((data.non_persist.run.floor - 1) / 4), 1, "images/enemy_slime_icon.png")
                     }
                     
                     data.non_persist.run.enemies.forEach((value, _index, _array) => {
@@ -999,13 +1004,9 @@ function game_tick(data) {
                 }
             
                 if (data.non_persist.run.in_combat) {
-                    document.getElementById("enemy_stats_container").style.display = "inline-block";
                     if (data.persist.unlocks.combat != true) {
-                        document.getElementById("upgrade_tab_combat").style.display = "block";
                         data.persist.unlocks.combat = true
                     }
-                } else {
-                    document.getElementById("enemy_stats_container").style.display = "none";
                 }
             
                 document.getElementById("active_run_info").innerHTML = "Floor " + data.non_persist.run.floor.toString() + " - " + data.non_persist.run.progress.toString() + "/10"
@@ -1025,29 +1026,27 @@ function display_tick(data) {
         evaluate_upgrade_button(data, value)
     })
 
-    if (data.persist.other.runs_started > 0) {
-        document.getElementById("player_stats_container").style.display = "inline-block";
-    }
+    document.getElementById("select_tab_prestige").style.display = (data.persist.unlocks.prestige == true? "block" : "none");
+
+    document.getElementById("select_tab_upgrades").style.display = (data.persist.unlocks.upgrades == true? "block" : "none");
+    document.getElementById("upgrade_tab_combat").style.display = (data.persist.unlocks.combat == true? "block" : "none");
+
+    document.getElementById("player_stats_container").style.display = (data.persist.other.runs_started > 0? "inline-block" : "none");
 
     if (data.persist.unlocks.upgrades) {
         document.getElementById("research_display").innerHTML = "Research: " + data.persist.currencies.research.toFixed(2).toString()
         document.getElementById("currency_display").style.height = "24px";
-    }
-
-    if (data.persist.unlocks.combat) {
-        document.getElementById("health_bar").style.display = "block";
-        document.getElementById("player_attack").style.display = "block";
-        document.getElementById("player_defense").style.display = "block";
-        document.getElementById("player_attack_speed").style.display = "block";
     } else {
-        document.getElementById("health_bar").style.display = "none";
-        document.getElementById("player_attack").style.display = "none";
-        document.getElementById("player_defense").style.display = "none";
-        document.getElementById("player_attack_speed").style.display = "none";
+        document.getElementById("currency_display").style.height = "0px";
     }
 
-    document.getElementById("player_attack").innerHTML = "Attack: " + calculate_attack(data).toFixed(0).toString()
-    document.getElementById("player_defense").innerHTML = "Defense: " + calculate_defense(data).toFixed(0).toString()
+    document.getElementById("health_bar").style.display = (data.persist.unlocks.combat? "block" : "none");
+    document.getElementById("player_attack").style.display = (data.persist.unlocks.combat? "block" : "none");
+    document.getElementById("player_defense").style.display = (data.persist.unlocks.combat? "block" : "none");
+    document.getElementById("player_attack_speed").style.display = (data.persist.unlocks.combat? "block" : "none");
+
+    document.getElementById("player_attack").innerHTML = "Attack: " + calculate_attack(data).toFixed(1).toString()
+    document.getElementById("player_defense").innerHTML = "Defense: " + calculate_defense(data).toFixed(1).toString()
     document.getElementById("player_attack_speed").innerHTML = "Attack Speed: " + calculate_attack_speed(data).toFixed(2).toString() + "x"
     document.getElementById("player_speed").innerHTML = "Move Speed: " + calculate_move_speed(data).toFixed(2).toString() + "x"
 
@@ -1063,15 +1062,16 @@ function display_tick(data) {
     
     document.querySelector("#courage_bar > .fill_bar").style.setProperty("--percent", data.non_persist.run.character_stats.courage / data.non_persist.run.character_stats.max_courage)
 
-    document.querySelector("#health_bar > .bar_text").innerHTML = "Health: " + data.non_persist.run.character_stats.health.toFixed(0).toString()  + "/" + data.non_persist.run.character_stats.max_health.toFixed(0).toString()
+    document.querySelector("#health_bar > .bar_text").innerHTML = "Health: " + data.non_persist.run.character_stats.health.toFixed(1).toString()  + "/" + data.non_persist.run.character_stats.max_health.toFixed(1).toString()
     document.querySelector("#health_bar > .fill_bar").style.setProperty("--percent", data.non_persist.run.character_stats.health / data.non_persist.run.character_stats.max_health)
 
+    document.getElementById("enemy_stats_container").style.display = (data.non_persist.run.in_combat? "inline-block" : "none");
     if (data.non_persist.run.enemy) {
-        document.getElementById("enemy_attack").innerHTML = "Attack: " + data.non_persist.run.enemy.stats.attack.toFixed(0).toString()
-        document.getElementById("enemy_defense").innerHTML = "Defense: " + data.non_persist.run.enemy.stats.defense.toFixed(0).toString()
+        document.getElementById("enemy_attack").innerHTML = "Attack: " + data.non_persist.run.enemy.stats.attack.toFixed(1).toString()
+        document.getElementById("enemy_defense").innerHTML = "Defense: " + data.non_persist.run.enemy.stats.defense.toFixed(1).toString()
         document.getElementById("enemy_speed").innerHTML = "Attack Speed: " + data.non_persist.run.enemy.stats.speed.toFixed(2).toString() + "x"
 
-        document.querySelector("#enemy_health_bar > .bar_text").innerHTML = "Health: " + data.non_persist.run.enemy.stats.health.toFixed(0).toString()  + "/" + data.non_persist.run.enemy.stats.max_health.toFixed(0).toString()
+        document.querySelector("#enemy_health_bar > .bar_text").innerHTML = "Health: " + data.non_persist.run.enemy.stats.health.toFixed(1).toString()  + "/" + data.non_persist.run.enemy.stats.max_health.toFixed(1).toString()
         document.querySelector("#enemy_health_bar > .fill_bar").style.setProperty("--percent", data.non_persist.run.enemy.stats.health / data.non_persist.run.enemy.stats.max_health)
     }
 }
@@ -1089,6 +1089,9 @@ function start() {
                 upgrades: false,
                 combat: false,
                 extended_upgrades: false
+            },
+            layers: {
+                prestige: 0
             },
             other: {
                 settings: {
