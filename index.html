@@ -12,7 +12,7 @@
             <div id="title_div">
                 <div id="title-text" style="font-weight: bold;">
                     <span style="--i:0">C</span><span style="--i:1">A</span><span style="--i:2">V</span><span style="--i:3">E</span><span style="--i:4">R</span><span style="--i:5">N</span> <span style="--i:6">C</span><span style="--i:7">R</span><span style="--i:8">A</span><span style="--i:9">W</span><span style="--i:10">L</span><span style="--i:11">E</span><span style="--i:12">R</span>
-                    <span style="--i:13; font-size: 75%; font-weight: bold;">(v0.0.2)</span>
+                    <span style="--i:13; font-size: 75%; font-weight: bold;">(v0.0.5)</span>
                 </div>
             </div>
 
@@ -95,13 +95,14 @@
                 <div id="tab_upgrades" style="display: none;">
                      <div id="game_tab_select_container">
                         <button id="upgrade_tab_basic" class="game_tab_select" data-selected=true onclick="changeupgradetab('basic')">Basic</button>
-                        <button id="upgrade_tab_combat" class="game_tab_select" data-selected=true onclick="changeupgradetab('combat')">Combat</button>
+                        <button id="upgrade_tab_combat" class="game_tab_select" style="display: none;" onclick="changeupgradetab('combat')">Combat</button>
                     </div>
                     
                     <div class="seperator"></div>
 
                     <div id="upgrade_container_basic" class="upgrade_container"></div>
                     <div id="upgrade_container_combat" class="upgrade_container"></div>
+                    <div id="upgrade_container_prestige" class="upgrade_container"></div>
                 </div>
 
                 <div id="tab_settings" style="display: none;">

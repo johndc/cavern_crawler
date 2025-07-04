@@ -1,11 +1,11 @@
-function calculate_courage_loss(data) {
+function calculate_courage_change(data) {
     let run_data = data.non_persist.run
 
     let floor_loss_exponent = 2
-    let add_courage_loss = Math.pow(floor_loss_exponent, run_data.floor - 1)
+    let add_courage_loss = -Math.pow(floor_loss_exponent, run_data.floor - 1)
 
     // Torch Upgrade
-    add_courage_loss -= (data.persist.upgrades.torch == 1? 0.25 : 0) + (data.persist.upgrades.torch_buff > 0? 0.05 * data.persist.upgrades.torch_buff : 0)
+    add_courage_loss += (data.persist.upgrades.torch == 1? 0.25 : 0) + (data.persist.upgrades.torch_buff > 0? 0.05 * data.persist.upgrades.torch_buff : 0)
 
     // Combat Upgrades
     add_courage_loss *= (data.persist.upgrades.combat_sword == 1? 0.9 : 1)
@@ -18,7 +18,32 @@ function calculate_courage_loss(data) {
     // Torch Buff Upgrade
     add_courage_loss *= (data.persist.upgrades.torch_buff1 > 0? 1 - 0.1 * data.persist.upgrades.torch_buff1 : 1)
 
-    return data.non_persist.run.in_combat? 0 : add_courage_loss
+    // Well cheers!
+    if (data.persist.upgrades.well_cheers != null && (data.non_persist.run.character_stats.courage / data.non_persist.run.character_stats.max_courage) > 0.5) {
+        add_courage_loss *= 0.75
+    }
+
+    if (data.non_persist.run.in_combat) {
+        add_courage_loss = 0
+    }
+
+    // Feelin' fine
+    if (data.persist.upgrades.feeling_fine != null && (data.non_persist.run.character_stats.health / data.non_persist.run.character_stats.max_health) > 0.5) {
+        add_courage_loss += 0.05 * data.persist.upgrades.feeling_fine
+    }
+
+    return add_courage_loss
+}
+
+function calculate_health_change(data) {
+    let health_change = 0
+
+    // Well cheers!
+    if (data.persist.upgrades.well_cheers != null && (data.non_persist.run.character_stats.courage / data.non_persist.run.character_stats.max_courage) > 0.5) {
+        health_change += 0.05 * data.persist.upgrades.well_cheers
+    }
+
+    return health_change
 }
 
 function calculate_health(data) {
@@ -34,7 +59,12 @@ function calculate_defense(data) {
     let return_defense = 0
 
     // Combat Armor
-    return_defense += (data.persist.upgrades.combat_armor > 0? data.persist.upgrades.combat_sword : 0)
+    return_defense += (data.persist.upgrades.combat_armor > 0? data.persist.upgrades.combat_armor : 0)
+
+    // Feelin' fine
+    if (data.persist.upgrades.feeling_fine != null && (data.non_persist.run.character_stats.health / data.non_persist.run.character_stats.max_health) > 0.5) {
+        return_defense += 1
+    }
 
     return return_defense
 }
@@ -77,11 +107,16 @@ function calculate_research_gain(data) {
     // Careful Looking
     base_research_gain *= (data.persist.upgrades.careful_looking > 0? 1 + 0.2 * data.persist.upgrades.careful_looking : 1)
 
+    base_research_gain += (data.persist.upgrades.enemy_bounty > 0? 0.5 * data.persist.upgrades.enemy_bounty * data.non_persist.run.enemy_kills : 0)
+
+    // Compounding Discoveries
+    base_research_gain *= (data.persist.upgrades.compound_research > 0? 1 + (0.1 * data.persist.upgrades.compound_research * (data.non_persist.run.floor - 1)) : 1)
+
     return base_research_gain
 }
 
 function calculate_damage_taken(damage, defense) {
-    return Math.max(damage - defense, 0)
+    return Math.max(damage - defense, 1)
 }
 
 function evaluate_dynamic_amount(dynamic, level) {
@@ -104,6 +139,7 @@ function calculate_start_courage(data) {
     let return_courage = 5
 
     return_courage += (data.persist.upgrades.swallow_inhibitions > 0? data.persist.upgrades.swallow_inhibitions : 0)
+    return_courage += (data.persist.upgrades.basic_routine > 0? data.persist.upgrades.basic_routine : 0)
 
     return return_courage
 }
