@@ -24,7 +24,7 @@ html {
 }
 
 button {
-    transition: background 0.25s, color 0.25s;
+    transition: background 0.25s, opacity 0.25s, color 0.25s;
     background-color: var(--button-normal-color);
 
     border: none;
@@ -38,8 +38,7 @@ button:enabled:hover {
 }
 
 button:disabled {
-    color: #FFFFFFAA;
-    background-color: var(--button-disabled-color);
+    opacity: 50%;
 }
 
 img { 
@@ -65,7 +64,7 @@ img {
 }
 
 .game_tab_select {
-    transition: background 0.25s, color 0.25s, height 0.5s, transform 0.5s, flex-grow 0.2s;
+    transition: background 0.25s, opacity 0.25s, color 0.25s, height 0.5s, transform 0.5s, flex-grow 0.2s;
 
     flex-grow: 1;
     text-align: center;
@@ -113,7 +112,12 @@ div > .fill_bar {
     border-radius: 4px;
 }
 
+.upgrade_button[_maxxed=true] {
+    fill: #00FF00;
+}
+
 .upgrade_button > .upgrade_title {
+    color: inherit;
     display: inline-block;
     position: relative;
     vertical-align: top;
@@ -122,6 +126,7 @@ div > .fill_bar {
 }
 
 .upgrade_button > .upgrade_level {
+    color: inherit;
     position: relative;
     vertical-align: top;
 
@@ -131,10 +136,11 @@ div > .fill_bar {
 }
 
 .upgrade_button .upgrade_description, .upgrade_button > .upgrade_effect, .upgrade_button > .upgrade_cost {
+    color: inherit;
     display: inline-block;
     position: relative;
 
-    font-size: 70%;
+    font-size: 60%;
     line-height: 125%;
 }
 
@@ -146,6 +152,20 @@ div > .fill_bar {
     font-weight: bold;
 }
 
+.dungeon_entity_icon {
+    position: absolute;
+    margin-left: calc(64px + 64px * var(--progress) + var(--offset));
+
+    transition: margin-left 0.15s;
+    transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.upgrade_container {
+    display: flex;
+    justify-content: center;
+
+    flex-wrap: wrap;
+}
 
 /* ID Styles */
 
@@ -161,6 +181,7 @@ div > .fill_bar {
 
 #main_div {
     position: absolute;
+    order: 1;
     margin-left: calc(50% - 384px);
     margin-right: calc(50% - 384px);
 
@@ -193,23 +214,29 @@ div > .fill_bar {
     justify-content: center;
 }
 
+#dungeon_container {
+    display: inline-flex;
+}
+
 #dungeon_tiles {
+    order: 1000;
     display: inline-flex;
     justify-content: center;
     width: 100%;
     height: 64px;
+    padding-left: 64px;
 }
 
-#run_player_icon {
-    position: absolute;
-    margin-left: calc(64px + 64px * var(--progress));
-
-    transition: margin-left 0.25s;
+#currency_display {
+    overflow: clip;
+    transition: height 1s;
     transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 #start_run_button {
     width: 90%;
+
+    height: 32px;
 
     margin-left: 5%;
     margin-right: 5%;
@@ -218,23 +245,31 @@ div > .fill_bar {
 }
 
 #player_stats_container {
-    margin-left: 64px;
-    margin-top: 4px;
-    width: calc(50% - 64px);
-    align-content: left;
+    margin-left: 32px;
+    margin-right: 32px;
+    
+    width: calc(50% - 128px);
 }
 
-#courage_bar {
+#enemy_stats_container {
+    margin-left: 32px;
+    margin-right: 32px;
+    
+    width: calc(50% - 128px);
+}
+
+#stats_container {
+    margin-top: 4px;
+    display: flex;
+    vertical-align: top;
+    justify-content: center;
+}
+
+#courage_bar, #health_bar, #enemy_health_bar {
     height: 32px;
     background-color: var(--bar-background-color);
     border-radius: 4px;
-}
-
-#basic_upgrade_container {
-    display: flex;
-    justify-content: center;
-
-    flex-wrap: wrap;
+    margin-bottom: 8px;
 }
 
 /* Other */

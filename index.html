@@ -27,9 +27,9 @@
 
             <div class="seperator"></div>
 
-            <div id="currency_display" style="text-align: center;">
+            <div id="currency_display" style="text-align: center; height: 0px;">
                 <div id="research_display">
-                    Research: 0
+                    
                 </div>
             </div>
 
@@ -37,17 +37,17 @@
 
             <div id="game_tab_container">
                 <div id="tab_main">
-                    <button id="start_run_button">Start Run</button>
+                    <button id="start_run_button">Delve into the caverns</button>
                     <div class="seperator"></div>
                     <div id="floor_record_text" style="text-align: center;"></div>
-                    <div id="active_run_container" style="display: none;">
-                        <div id="active_run_info" style="text-align: center;">Floor 1 - 0/10</div>
+                    <div id="active_run_container" style="display: none; padding-bottom: 4px;">
+                        <div id="active_run_info" style="text-align: center; height: 24px;">Floor 1 - 0/10</div>
                         <div id="dungeon_container">
-                            <span id="run_player_icon" style="--progress: 0;">
+                            <span id="run_player_icon" class="dungeon_entity_icon" style="--progress: 0;">
                                 <img src="images/player_icon.png">
                             </span>
-
-                            <div id="dungeon_tiles">
+                            <span id="enemy_container"></span>
+                            <span id="dungeon_tiles">
                                 <img class="dungeon_background" src="images/dungeon_wall.png">
                                 <img class="dungeon_background" src="images/dungeon_wall.png">
                                 <img class="dungeon_background" src="images/dungeon_wall.png">
@@ -58,30 +58,50 @@
                                 <img class="dungeon_background" src="images/dungeon_wall.png">
                                 <img class="dungeon_background" src="images/dungeon_wall.png">
                                 <img class="dungeon_background" src="images/dungeon_wall.png">
+                            </span>
+                        </div>
+                    </div>
+                    <div class="seperator"></div>
+                    <div id="stats_container">
+                        <div id="player_stats_container" style="display: none;">
+                            <div style="height: 24px;">Your Stats:</div>
+                            <div class="fill_bar_base" id="courage_bar">
+                                <div class="bar_text" style="position: absolute; margin-left: 4px; margin-top: 4px;">Courage: 10/10</div>
+                                <div class="fill_bar" style="--percent: 0.5; background-color: rgb(214, 114, 64);"></div>
                             </div>
 
-                            <div id="player_stats_container">
-                                Your Stats:
-                                <div class="fill_bar_base" id="courage_bar">
-                                    <span id="courage_bar_text" style="position: absolute; margin-left: 4px;">Courage: 10/10</span>
-                                    <div class="fill_bar" style="--percent: 0.5; background-color: rgb(214, 114, 64);"></div>
-                                </div>
+                            <div class="fill_bar_base" id="health_bar">
+                                <div class="bar_text" style="position: absolute; margin-left: 4px; margin-top: 4px;">Health: 5/5</div>
+                                <div class="fill_bar" style="--percent: 0.5; background-color: rgb(24, 226, 125);"></div>
                             </div>
+
+                            <div id="player_attack">Attack: 1</div>
+                            <div id="player_defense">Defense: 0</div>
+                            <div id="player_attack_speed">Attack Speed: 1.00x</div>
+                            <div id="player_speed">Move Speed: 1.00x</div>
+                        </div><div id="enemy_stats_container" style="display: none;">
+                            <div style="height: 24px;">Enemy Stats:</div>
+                            <div class="fill_bar_base" id="enemy_health_bar">
+                                <div class="bar_text" style="position: absolute; margin-left: 4px; margin-top: 4px;">Health: 5/5</div>
+                                <div class="fill_bar" style="--percent: 0.5; background-color: rgb(24, 226, 125);"></div>
+                            </div>
+                            <div id="enemy_attack">Attack: 1</div>
+                            <div id="enemy_defense">Defense: 0</div>
+                            <div id="enemy_speed">Attack Speed: 1.00x</div>
                         </div>
                     </div>
                 </div>
                 
                 <div id="tab_upgrades" style="display: none;">
-                    <div style="text-align: center; font-size: 75%;">(Upgrades bought apply on the next run!)</div>
-                    <div id="basic_upgrade_container">
-                        <button class="upgrade_button">
-                            <div class="upgrade_title">Torch</div>
-                            <div class="upgrade_level">(0/1)</div>
-                            <div class="upgrade_description">You should probably carry a light source with you. Slows down courage loss.</div>
-                            <div class="upgrade_effect">Effect: +0.00 Courage/s</div>
-                            <div class="upgrade_cost">-0.50 Research</div>
-                        </button>
+                     <div id="game_tab_select_container">
+                        <button id="upgrade_tab_basic" class="game_tab_select" data-selected=true onclick="changeupgradetab('basic')">Basic</button>
+                        <button id="upgrade_tab_combat" class="game_tab_select" data-selected=true onclick="changeupgradetab('combat')">Combat</button>
                     </div>
+                    
+                    <div class="seperator"></div>
+
+                    <div id="upgrade_container_basic" class="upgrade_container"></div>
+                    <div id="upgrade_container_combat" class="upgrade_container"></div>
                 </div>
 
                 <div id="tab_settings" style="display: none;">

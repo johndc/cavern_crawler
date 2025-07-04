@@ -1,3 +1,547 @@
+let last_date = Date.now()
+
+let string_definitions = {
+    "$currency.research": "Research"
+}
+
+let upgrades_list = {
+    basic: [
+        // Torch Upgrades
+        {
+            id: "torch",
+            name: "Torch",
+            description: "You should probably bring a light source with you. Slows down courage loss.",
+            effect: {
+                amount: {
+                    type: "flat",
+                    value: 0.25
+                },
+                prefix: "+",
+                suffix: "Courage/s"
+            },
+
+            cost: {
+                currency: "research",
+                amount: {
+                    type: "flat_constant",
+                    value: 0.5
+                },
+                prefix: "",
+                suffix: "Research"
+            },
+
+            max_level: 1
+        },
+
+        {
+            id: "torch_buff",
+            name: "Torch Power",
+            description: "Make your torch shine brighter than before.. Slows down courage loss further.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 0.05,
+                },
+                prefix: "+",
+                suffix: " Courage/s"
+            },
+
+            cost: {
+                currency: "research",
+                amount: {
+                    type: "multiply",
+                    value: 0.25,
+                    multiplier: 1.25
+                },
+                prefix: "",
+                suffix: "Research"
+            },
+            
+            requirements: {
+                upgrades: [
+                    {
+                        name: "torch"
+                    }
+                ]
+            },
+
+            max_level: 5
+        },
+
+        {
+            id: "torch_buff1",
+            name: "Torch Power+",
+            description: "Make your torch shine even brighter than before.. Slows down courage loss multiplicatively.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 0.1,
+                },
+                prefix: "-",
+                suffix: " x Courage Loss/s"
+            },
+
+            cost: {
+                currency: "research",
+                amount: {
+                    type: "multiply",
+                    value: 1,
+                    multiplier: 1.5
+                },
+                prefix: "",
+                suffix: "Research"
+            },
+            
+            requirements: {
+                upgrades: [
+                    {
+                        name: "torch_buff",
+                        amount: 5
+                    }
+                ]
+            },
+
+            max_level: 5
+        },
+
+        // Extended Upgrades
+
+        {
+            id: "swallow_inhibitions",
+            name: "Swallow your inhibitions",
+            description: "You might not want to be here, but you have something in mind here. Start with more courage.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 1,
+                },
+                prefix: "+",
+                suffix: "Courage"
+            },
+
+            cost: {
+                currency: "research",
+                amount: {
+                    type: "multiply",
+                    value: 0.75,
+                    multiplier: 1.25
+                },
+                prefix: "",
+                suffix: "Research"
+            },
+            
+            requirements: {
+                upgrades: [
+                    {
+                        name: "torch"
+                    }
+                ]
+            },
+
+            max_level: 5
+        },
+
+        {
+            id: "careful_looking",
+            name: "Careful Looking",
+            description: "Take note of everything, even if it kind of creeps you out. Gain more Research but lose 10% more courage.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 0.2,
+                },
+                prefix: "+",
+                suffix: "x Research"
+            },
+
+            cost: {
+                currency: "research",
+                amount: {
+                    type: "multiply",
+                    value: 1,
+                    multiplier: 1.5
+                },
+                prefix: "",
+                suffix: "Research"
+            },
+            
+            requirements: {
+                upgrades: [
+                    {
+                        name: "torch"
+                    }
+                ]
+            },
+
+            max_level: 5
+        },
+
+        {
+            id: "growing_pace",
+            name: "Panicked Pace",
+            description: "Never too late to pick up the pace! The less courage you have, the faster you move.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 0.2,
+                },
+                prefix: "+",
+                suffix: "Move Speed"
+            },
+
+            cost: {
+                currency: "research",
+                amount: {
+                    type: "multiply",
+                    value: 1,
+                    multiplier: 1.25
+                },
+                prefix: "",
+                suffix: "Research"
+            },
+            
+            requirements: {
+                upgrades: [
+                    {
+                        name: "torch"
+                    },
+                    {
+                        name: "careful_looking"
+                    }
+                ]
+            },
+
+            max_level: 5
+        },
+    ],
+
+    combat: [
+        {
+            id: "train_endurance",
+            name: "Endurance Training",
+            description: "Better get it in now. Increases health.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 1,
+                },
+                prefix: "+",
+                suffix: "Health"
+            },
+
+            cost: {
+                currency: "research",
+                amount: {
+                    type: "multiply",
+                    value: 5,
+                    multiplier: 1.25
+                },
+                prefix: "",
+                suffix: "Research"
+            },
+            
+            requirements: {
+                unlocks: [
+                    "combat"
+                ]
+            },
+
+            max_level: 25
+        },
+
+        {
+            id: "train_agility",
+            name: "Agility Training",
+            description: "Make fights go quicker. Increases attack speed.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 0.1,
+                },
+                prefix: "+",
+                suffix: "x Attack Speed"
+            },
+
+            cost: {
+                currency: "research",
+                amount: {
+                    type: "multiply",
+                    value: 5,
+                    multiplier: 1.25
+                },
+                prefix: "",
+                suffix: "Research"
+            },
+            
+            requirements: {
+                unlocks: [
+                    "combat"
+                ]
+            },
+
+            max_level: 25
+        },
+
+        {
+            id: "combat_sword",
+            name: "Prepare Sword",
+            description: "Best be prepared for the next fight. Slows down courage loss by 10% and increases attack power.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 1,
+                },
+                prefix: "+",
+                suffix: "Attack"
+            },
+
+            cost: {
+                currency: "research",
+                amount: {
+                    type: "multiply",
+                    value: 5,
+                    multiplier: 1.5
+                },
+                prefix: "",
+                suffix: "Research"
+            },
+            
+            requirements: {
+                unlocks: [
+                    "combat"
+                ]
+            },
+
+            max_level: 10
+        },
+
+        {
+            id: "combat_armor",
+            name: "Prepare Armor",
+            description: "Would be good to be able to take a few hits. Slows down courage loss by 10% and increases defense.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 1,
+                },
+                prefix: "+",
+                suffix: "Defense"
+            },
+
+            cost: {
+                currency: "research",
+                amount: {
+                    type: "multiply",
+                    value: 10,
+                    multiplier: 2
+                },
+                prefix: "",
+                suffix: "Research"
+            },
+            
+            requirements: {
+                unlocks: [
+                    "combat"
+                ]
+            },
+
+            max_level: 10
+        },
+
+        {
+            id: "combat_boots",
+            name: "Prepare Boots",
+            description: "Would be good to ease the foot pain. Slows down courage loss by 10% and increases move speed.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 0.1,
+                },
+                prefix: "+",
+                suffix: "x Move Speed"
+            },
+
+            cost: {
+                currency: "research",
+                amount: {
+                    type: "multiply",
+                    value: 5,
+                    multiplier: 1.5
+                },
+                prefix: "",
+                suffix: "Research"
+            },
+            
+            requirements: {
+                unlocks: [
+                    "combat"
+                ]
+            },
+
+            max_level: 10
+        },
+    ]
+}
+
+function can_afford_upgrade(data, currency, price) {
+    return data.persist.currencies[currency] >= price
+}
+
+function is_upgrade_available(data, upgrade_data) {
+    let upgrade_available = true
+    if (upgrade_data.requirements) {
+        if (upgrade_data.requirements.upgrades != null) {
+            upgrade_data.requirements.upgrades.forEach((value, _index, _array) => {
+                if (upgrade_available == false) {
+                    return
+                }
+
+                if (data.persist.upgrades[value.name] == null) {
+                    upgrade_available = false
+                }
+
+                if (value.amount != null) {
+                    if (data.persist.upgrades[value.name] < value.amount) {
+                        upgrade_available = false
+                    }
+                }
+            })
+        }
+
+        if (upgrade_data.requirements.unlocks != null && upgrade_available == true) {
+            upgrade_data.requirements.unlocks.forEach((value, _index, _array) => {
+                if (upgrade_available == false) {
+                    return
+                }
+
+                if (data.persist.unlocks[value] != true) {
+                    upgrade_available = false
+                }
+            })
+        }
+    }
+    return upgrade_available
+}
+
+function evaluate_upgrade_button(data, upgrade) {
+    let upgrade_available = is_upgrade_available(data, upgrade.upgrade_data)
+
+    if (upgrade_available == true) {
+        upgrade.base_button.style.setProperty("display", "block")
+
+        let upgrade_level = upgrade.base_button.children[1]
+
+        let max_level = upgrade.upgrade_data.max_level
+        let current_level = 0
+        if (data.persist.upgrades[upgrade.upgrade_data.id] != null) {
+            current_level = data.persist.upgrades[upgrade.upgrade_data.id]
+        }
+        if (current_level >= max_level) {
+            upgrade.base_button.setAttribute("_maxxed", "true")
+        }
+        let upgrade_level_text = "(" + current_level.toString() + "/" + max_level.toString() + ")"
+        if (upgrade_level.innerHTML != upgrade_level_text) {
+            upgrade_level.innerHTML = upgrade_level_text
+        }
+
+        let upgrade_effect = upgrade.base_button.children[3]
+        let upgrade_effect_text = "Effect: " + upgrade.upgrade_data.effect.prefix + evaluate_dynamic_amount(upgrade.upgrade_data.effect.amount, current_level).toFixed(2) + " " + upgrade.upgrade_data.effect.suffix
+        if (upgrade_effect.innerHTML != upgrade_effect_text) {
+            upgrade_effect.innerHTML = upgrade_effect_text
+        }
+
+        let upgrade_cost_display = upgrade.base_button.children[4]
+        let upgrade_cost = evaluate_dynamic_amount(upgrade.upgrade_data.cost.amount, current_level).toFixed(2)
+        let upgrade_cost_text = upgrade.upgrade_data.cost.prefix + (-upgrade_cost) + " " + upgrade.upgrade_data.cost.suffix
+        if (upgrade_cost_display.innerHTML != upgrade_cost_text) {
+            upgrade_cost_display.innerHTML = upgrade_cost_text
+        }
+
+        if (can_afford_upgrade(data, upgrade.upgrade_data.cost.currency, upgrade_cost) && current_level < max_level) {
+            if (upgrade.base_button.getAttribute("disabled") != null) {
+                upgrade.base_button.removeAttribute("disabled")
+            }
+        } else {
+            if (upgrade.base_button.getAttribute("disabled") == null) {
+                upgrade.base_button.setAttribute("disabled", "disabled")
+            }
+        }
+    } else {
+        upgrade.base_button.style.setProperty("display", "none")
+    }
+}
+
+let upgrade_buttons = []
+
+function create_upgrade_buttons(data, list, category) {
+    list.forEach((value, index, _array) => {
+        let return_table = {
+            upgrade_data: value
+        }
+        return_table.base_button = document.createElement("button")
+        return_table.base_button.className = "upgrade_button"
+        return_table.base_button.id = category + "_" + value.id
+        return_table.base_button.style.setProperty("order", index)
+
+        let upgrade_name = document.createElement("div")
+        upgrade_name.className = "upgrade_title"
+        upgrade_name.innerHTML = value.name
+        return_table.base_button.appendChild(upgrade_name)
+
+        let upgrade_level = document.createElement("div")
+        upgrade_level.className = "upgrade_level"
+
+        let max_level = value.max_level
+        let current_level = 0
+        if (data.persist.upgrades[value.id] != null) {
+            current_level = data.persist.upgrades[value.id]
+        }
+        upgrade_level.innerHTML = "(" + current_level.toString() + "/" + max_level.toString() + ")"
+        return_table.base_button.appendChild(upgrade_level)
+
+        let upgrade_desc = document.createElement("div")
+        upgrade_desc.className = "upgrade_description"
+        upgrade_desc.innerHTML = value.description
+        return_table.base_button.appendChild(upgrade_desc)
+
+        let upgrade_effect = document.createElement("div")
+        upgrade_effect.className = "upgrade_effect"
+        upgrade_effect.innerHTML = "Effect: " + value.effect.prefix + evaluate_dynamic_amount(value.effect.amount, current_level).toFixed(2) + " " + value.effect.suffix
+        return_table.base_button.appendChild(upgrade_effect)
+
+        let upgrade_cost = document.createElement("div")
+        upgrade_cost.className = "upgrade_cost"
+        upgrade_cost.innerHTML = value.cost.prefix + (-evaluate_dynamic_amount(value.cost.amount, current_level).toFixed(2)) + " " + value.cost.suffix
+        return_table.base_button.appendChild(upgrade_cost)
+
+        return_table.base_button.addEventListener("click", (_self, _event) => {
+            evaluate_upgrade_button(data, return_table)
+            
+            let evaluate_level = 0
+            if (data.persist.upgrades[value.id] != null) {
+                evaluate_level = data.persist.upgrades[return_table.upgrade_data.id]
+            }
+
+            if (return_table.base_button.getAttribute("disabled") == null) {
+                data.persist.currencies[return_table.upgrade_data.cost.currency] -= evaluate_dynamic_amount(return_table.upgrade_data.cost.amount, evaluate_level)
+
+                if (data.persist.upgrades[return_table.upgrade_data.id] != null) {
+                    data.persist.upgrades[return_table.upgrade_data.id] += 1
+                } else {
+                    data.persist.upgrades[return_table.upgrade_data.id] = 1
+                }
+
+                evaluate_upgrade_button(data, return_table)
+            }
+        })
+
+        upgrade_buttons.push(return_table)
+        document.getElementById("upgrade_container_" + category).appendChild(return_table.base_button)
+
+        evaluate_upgrade_button(data, return_table)
+    })
+}
+
 function changetab(tab_name) {
     document.getElementById("click-sound").play()
     document.querySelectorAll('button[id^=select_tab_]').forEach((tab, _index, _parent) => {
@@ -17,22 +561,83 @@ function changetab(tab_name) {
     })
 }
 
+function changeupgradetab(tab_name) {
+    document.getElementById("click-sound").play()
+    document.querySelectorAll('button[id^=upgrade_tab_]').forEach((tab, _index, _parent) => {
+        if (tab.id.endsWith(tab_name)) {
+            tab.dataset.selected = true;
+        } else {
+            tab.dataset.selected = false;
+        }
+    })
+
+    document.querySelectorAll('div[id^=upgrade_container_]').forEach((tab, _index, _parent) => {
+        if (tab.id.endsWith(tab_name)) {
+            tab.style.display = "flex";
+        } else {
+            tab.style.display = "none";
+        }
+    })
+}
+
+function remove_enemy(data, tile) {
+    let found_index = data.non_persist.run.enemies.findIndex((enemy) => {
+        return enemy.tile == tile
+    })
+
+    if (found_index != null) {
+        let found_enemy = data.non_persist.run.enemies[found_index]
+        found_enemy.element.remove()
+
+        data.non_persist.run.enemies.splice(found_index, 1)
+    }
+}
+
+function clear_enemies(data) {
+    data.non_persist.run.enemies.forEach((value, index, _array) => {
+        value.element.remove()
+    })
+    data.non_persist.run.enemies = []
+}
+
+function append_enemy(data, position, health, attack, defense, speed, graphic) {
+    let enemy_table = {
+        tile: position,
+        action_tick: 0,
+        stats: {
+            health: health,
+            max_health: health,
+            attack: attack,
+            defense: defense,
+            speed: speed
+        }
+    }
+
+    enemy_table.element = document.createElement("span")
+    enemy_table.element.setAttribute("class", "dungeon_entity_icon")
+    enemy_table.element.style.setProperty("--progress", position.toString())
+    enemy_table.element.style.setProperty("--offset", "0px")
+
+    let enemy_graphic = document.createElement("img")
+    enemy_graphic.src = graphic
+    enemy_table.element.appendChild(enemy_graphic)
+
+    document.getElementById("enemy_container").appendChild(enemy_table.element)
+    data.non_persist.run.enemies.push(enemy_table)
+}
+
+let last_game_tick = 0
 function start_run(data) {
-    data.non_persist.run.character_stats.max_courage = 5
-    data.non_persist.run.character_stats.courage = 5
+    data.persist.other.runs_started += 1
+    calculate_player_stats(data)
 
-    data.non_persist.run.character_stats.max_health = 5
-    data.non_persist.run.character_stats.health = 5
-
-    data.non_persist.run.character_stats.attack = 1
-    data.non_persist.run.character_stats.defense = 0
-
-    data.non_persist.run.character_stats.move_speed = 1
-    data.non_persist.run.character_stats.attack_speed = 1
-
+    data.non_persist.run.enemy = null
+    data.non_persist.run.in_combat = false
     data.non_persist.run.move_tick = 0
     data.non_persist.run.floor = 1
     data.non_persist.run.progress = 0
+    last_game_tick = 0
+
     document.getElementById("run_player_icon").style.setProperty("--progress", data.non_persist.run.progress)
 
     document.getElementById("floor_record_text").style.display = "none"
@@ -40,58 +645,190 @@ function start_run(data) {
     data.non_persist.run_active = true
 }
 
+function end_run(data) {
+    data.non_persist.run_active = false
+    data.non_persist.run.in_combat = false
+    data.non_persist.run.enemy = null
+    
+    clear_enemies(data)
+
+    if (data.non_persist.run.floor > data.persist.other.records.floor) {
+        data.persist.other.records.floor = data.non_persist.run.floor
+        document.getElementById("floor_record_text").innerHTML = "Your furthest floor is Floor " + data.persist.other.records.floor.toString() + "!"
+    }
+    document.getElementById("floor_record_text").style.display = "block"
+
+    if (data.persist.unlocks.upgrades != true) {
+        data.persist.unlocks.upgrades = true
+        document.getElementById("select_tab_upgrades").style.display = "block";
+    }
+
+    data.persist.currencies.research += calculate_research_gain(data)
+
+    document.getElementById("enemy_stats_container").style.display = "none"
+    document.getElementById("active_run_container").style.display = "none"
+    document.getElementById("start_run_button").removeAttribute("disabled")
+}
+
 function game_tick(data) {
-    data.persist.other.time_played = data.persist.other.time_played + 0.016;
+    let time_elapsed = (Date.now() - last_date) / 1000
+    last_date = Date.now()
+
+    data.persist.other.time_played = data.persist.other.time_played + time_elapsed;
 
     if (data.non_persist.run_active == true) {
-        document.getElementById("start_run_button").setAttribute("disabled", "disabled")
-        console.log(data.non_persist.run.progress)
-        data.non_persist.run.move_tick += data.non_persist.run.character_stats.move_speed / 60
+        last_game_tick += time_elapsed
+        if (last_game_tick > 0.016) {
+            while (last_game_tick > 0.016 && data.non_persist.run_active == true) {
+                last_game_tick -= 0.016
+
+                document.getElementById("start_run_button").setAttribute("disabled", "disabled")
+                data.non_persist.run.move_tick += calculate_move_speed(data) / 60
+
+                let current_courage_loss = calculate_courage_loss(data)
+                data.non_persist.run.character_stats.courage = Math.max(data.non_persist.run.character_stats.courage - current_courage_loss / 60, 0)
+
+                if (data.non_persist.run.character_stats.courage <= 0) {
+                    end_run(data)
+                    break
+                }
+
+                if (data.non_persist.run.move_tick >= 1) {
+                    data.non_persist.run.move_tick -= 1
+                    
+                    data.non_persist.run.progress += 1
+                    if (data.non_persist.run.progress >= 10) {
+                        data.non_persist.run.progress -= 10
+                        data.non_persist.run.floor += 1
+                        
+                        if (data.non_persist.run.floor > 2) {
+                            if (data.persist.unlocks.extended_upgrades == false) {
+                                data.persist.unlocks.extended_upgrades = true
+                            }
+                        }
+
+                        append_enemy(data, 1, 1 * Math.pow(2, data.non_persist.run.floor - 1), Math.floor(Math.pow(2, (data.non_persist.run.floor - 1) / 2)), Math.floor((data.non_persist.run.floor - 1) / 4), 1, "images/enemy_slime_icon.png")
+                    }
+                    
+                    data.non_persist.run.enemies.forEach((value, _index, _array) => {
+                        if (data.non_persist.run.in_combat) {
+                            return
+                        }
+
+                        if (value.tile == data.non_persist.run.progress) {
+                            data.non_persist.run.in_combat = true
+                            data.non_persist.run.attack_tick = 0
+                            data.non_persist.run.enemy = value
+                            return
+                        }
+                    })
+                    document.getElementById("run_player_icon").style.setProperty("--progress", data.non_persist.run.progress)
+                }
+
+                if (data.non_persist.run.in_combat) {
+                    data.non_persist.run.enemy.element.style.setProperty("--offset", "16px")
+                    document.getElementById("run_player_icon").style.setProperty("--offset", "-16px")
+
+                    data.non_persist.run.enemy.action_tick += data.non_persist.run.enemy.stats.speed / 60
+                    data.non_persist.run.attack_tick += calculate_attack_speed(data) / 60
+
+                    if (data.non_persist.run.enemy.action_tick >= 1) {
+                        data.non_persist.run.enemy.action_tick -= 1
+                        data.non_persist.run.character_stats.health -= calculate_damage_taken(data.non_persist.run.enemy.stats.attack, calculate_defense(data))
+                    }
+
+                    if (data.non_persist.run.attack_tick >= 1) {
+                        data.non_persist.run.attack_tick -= 1
+                        data.non_persist.run.enemy.stats.health -= calculate_damage_taken(calculate_attack(data), data.non_persist.run.enemy.stats.defense)
+                    }
+                    
+                    if (data.non_persist.run.character_stats.health <= 0) {
+                        end_run(data)
+                        break
+                    }
+
+                    if (data.non_persist.run.enemy.stats.health <= 0) {
+                        document.getElementById("enemy_stats_container").style.display = "none"
+
+                        data.non_persist.run.in_combat = false
+                        remove_enemy(data, data.non_persist.run.enemy.tile)
+                        data.non_persist.run.enemy = null
+                    }
+                } else {
+                    document.getElementById("run_player_icon").style.setProperty("--offset", "0px")
+                }
+            
+                if (data.non_persist.run.in_combat) {
+                    document.getElementById("enemy_stats_container").style.display = "inline-block";
+                    if (data.persist.unlocks.combat == false) {
+                        data.persist.unlocks.combat = true
+                    }
+                } else {
+                    document.getElementById("enemy_stats_container").style.display = "none";
+                }
+            
+                document.getElementById("active_run_info").innerHTML = "Floor " + data.non_persist.run.floor.toString() + " - " + data.non_persist.run.progress.toString() + "/10"
+            }
+        }
+    } else {
+        calculate_player_stats(data)
+    }
+}
+
+function display_tick(data) {
+    upgrade_buttons.forEach((value, _index, _array) => {
+        evaluate_upgrade_button(data, value)
+    })
+
+    if (data.persist.other.runs_started > 0) {
+        document.getElementById("player_stats_container").style.display = "inline-block";
+    }
+
+    if (data.persist.unlocks.upgrades) {
+        document.getElementById("research_display").innerHTML = "Research: " + data.persist.currencies.research.toFixed(2).toString()
+        document.getElementById("currency_display").style.height = "24px";
+    }
+
+    if (data.persist.unlocks.combat) {
+        document.getElementById("health_bar").style.display = "block";
+        document.getElementById("player_attack").style.display = "block";
+        document.getElementById("player_defense").style.display = "block";
+        document.getElementById("player_attack_speed").style.display = "block";
+    } else {
+        document.getElementById("health_bar").style.display = "none";
+        document.getElementById("player_attack").style.display = "none";
+        document.getElementById("player_defense").style.display = "none";
+        document.getElementById("player_attack_speed").style.display = "none";
+    }
+
+    document.getElementById("player_attack").innerHTML = "Attack: " + calculate_attack(data).toFixed(0).toString()
+    document.getElementById("player_defense").innerHTML = "Defense: " + calculate_defense(data).toFixed(0).toString()
+    document.getElementById("player_attack_speed").innerHTML = "Attack Speed: " + calculate_attack_speed(data).toFixed(2).toString() + "x"
+    document.getElementById("player_speed").innerHTML = "Move Speed: " + calculate_move_speed(data).toFixed(2).toString() + "x"
+
+    document.querySelector("#courage_bar > .bar_text").innerHTML = "Courage: " + data.non_persist.run.character_stats.courage.toFixed(1).toString()  + "/" + data.non_persist.run.character_stats.max_courage.toFixed(0).toString()
+    if (data.non_persist.run_active) {
+        let research_gain = calculate_research_gain(data)
+        document.getElementById("research_display").innerHTML = "Research: " + data.persist.currencies.research.toFixed(2).toString() + " (+" + research_gain.toFixed(2).toString() + ")"
 
         let current_courage_loss = calculate_courage_loss(data)
-        data.non_persist.run.character_stats.courage = Math.max(data.non_persist.run.character_stats.courage - current_courage_loss / 60, 0)
 
-        if (data.non_persist.run.character_stats.courage <= 0) {
-            data.non_persist.run_active = false
-
-            if (data.non_persist.run.floor > data.persist.other.records.floor) {
-                data.persist.other.records.floor = data.non_persist.run.floor
-                document.getElementById("floor_record_text").innerHTML = "Your furthest floor is Floor " + data.persist.other.records.floor.toString() + "!"
-            }
-            document.getElementById("floor_record_text").style.display = "block"
-
-            if (data.persist.unlocks.upgrades != true) {
-                data.persist.unlocks.upgrades = true
-                document.getElementById("select_tab_upgrades").style.display = "block";
-            }
-
-            data.persist.currencies.research += calculate_research_gain(data)
-
-            document.getElementById("active_run_container").style.display = "none"
-            document.getElementById("start_run_button").removeAttribute("disabled")
-        }
-
-        if (data.non_persist.run.move_tick > 1) {
-            data.non_persist.run.move_tick -= 1
-            
-            data.non_persist.run.progress += 1
-            if (data.non_persist.run.progress >= 10) {
-                data.non_persist.run.progress -= 10
-                data.non_persist.run.floor += 1
-            }
-            document.getElementById("run_player_icon").style.setProperty("--progress", data.non_persist.run.progress)
-        }
-
-        document.getElementById("active_run_info").innerHTML = "Floor " + data.non_persist.run.floor.toString() + " - " + data.non_persist.run.progress.toString() + "/10"
-        document.getElementById("courage_bar_text").innerHTML = "Courage: " + data.non_persist.run.character_stats.courage.toFixed(1).toString()  + "/" + data.non_persist.run.character_stats.max_courage.toFixed(0).toString() + " (-" + current_courage_loss.toFixed(2).toString() + "/s)"
-        document.querySelector("#courage_bar > .fill_bar").style.setProperty("--percent", data.non_persist.run.character_stats.courage.toFixed(1) / data.non_persist.run.character_stats.max_courage)
+        document.querySelector("#courage_bar > .bar_text").innerHTML = "Courage: " + data.non_persist.run.character_stats.courage.toFixed(1).toString()  + "/" + data.non_persist.run.character_stats.max_courage.toFixed(0).toString() + " (-" + current_courage_loss.toFixed(2).toString() + "/s)"
     }
+    
+    document.querySelector("#courage_bar > .fill_bar").style.setProperty("--percent", data.non_persist.run.character_stats.courage / data.non_persist.run.character_stats.max_courage)
 
-    if (data.persist.upgrades.basic.torch > 0 && data.persist.unlocks.extended_basic_upgrades == false) {
-        data.persist.unlocks.extended_basic_upgrades = true
+    document.querySelector("#health_bar > .bar_text").innerHTML = "Health: " + data.non_persist.run.character_stats.health.toFixed(0).toString()  + "/" + data.non_persist.run.character_stats.max_health.toFixed(0).toString()
+    document.querySelector("#health_bar > .fill_bar").style.setProperty("--percent", data.non_persist.run.character_stats.health / data.non_persist.run.character_stats.max_health)
+
+    if (data.non_persist.run.enemy) {
+        document.getElementById("enemy_attack").innerHTML = "Attack: " + data.non_persist.run.enemy.stats.attack.toFixed(0).toString()
+        document.getElementById("enemy_defense").innerHTML = "Defense: " + data.non_persist.run.enemy.stats.defense.toFixed(0).toString()
+        document.getElementById("enemy_speed").innerHTML = "Attack Speed: " + data.non_persist.run.enemy.stats.speed.toFixed(2).toString() + "x"
+
+        document.querySelector("#enemy_health_bar > .bar_text").innerHTML = "Health: " + data.non_persist.run.enemy.stats.health.toFixed(0).toString()  + "/" + data.non_persist.run.enemy.stats.max_health.toFixed(0).toString()
+        document.querySelector("#enemy_health_bar > .fill_bar").style.setProperty("--percent", data.non_persist.run.enemy.stats.health / data.non_persist.run.enemy.stats.max_health)
     }
-
-    document.getElementById("research_display").innerHTML = "Research: " + data.persist.currencies.research.toFixed(2).toString()
 }
 
 function start() {
@@ -101,20 +838,18 @@ function start() {
                 research: 0
             },
             upgrades: {
-                basic: {
-                    torch: 0,
 
-                }
             },
             unlocks: {
                 upgrades: false,
-                extended_basic_upgrades: false
+                combat: false
             },
             other: {
                 settings: {
 
                 },
                 time_played: 0,
+                runs_started: 0,
 
                 records: {
                     floor: 0
@@ -127,6 +862,11 @@ function start() {
                 floor: 1,
                 progress: 0,
                 move_tick: 0,
+
+                in_combat: false,
+                attack_tick: 0,
+                enemy: null,
+
                 character_stats: {
                     courage: 5,
                     max_courage: 5,
@@ -138,13 +878,21 @@ function start() {
                     attack: 0,
                     move_speed: 1,
                     attack_speed: 1
-                }
+                },
+                enemies: []
             }
         }
     }
 
+    create_upgrade_buttons(data, upgrades_list.basic, "basic")
+    create_upgrade_buttons(data, upgrades_list.combat, "combat")
+
     if (data.persist.unlocks.upgrades == true) {
         document.getElementById("select_tab_upgrades").style.display = "block";
+    }
+
+    if (data.persist.unlocks.combat == true) {
+        document.getElementById("upgrade_container_combat").style.display = "flex";
     }
 
     if (data.persist.other.records.floor > 0) {
@@ -157,7 +905,11 @@ function start() {
         }
     })
 
+    changetab("main")
+    changeupgradetab("basic")
+
     setInterval(game_tick, 1000/60, data)
+    setInterval(display_tick, 1000/20, data)
 }
 
 onload = start
