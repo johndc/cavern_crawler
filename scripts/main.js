@@ -709,7 +709,7 @@ let upgrades_list = {
             cost: {
                 currency: "prestige_points",
                 amount: {
-                    type: "increment",
+                    type: "increment_cost",
                     value: 1
                 },
                 prefix: "",
@@ -939,9 +939,10 @@ function evaluate_upgrade_button(data, upgrade) {
             upgrade_effect.innerHTML = upgrade_effect_text
         }
 
-        let upgrade_cost_display = upgrade.base_button.children[4]
+        let upgrade_cost_display = upgrade.base_button.children[5]
         let upgrade_cost = evaluate_dynamic_amount(upgrade.upgrade_data.cost.amount, current_level).toFixed(2)
         let upgrade_cost_text = upgrade.upgrade_data.cost.prefix + (-upgrade_cost) + " " + upgrade.upgrade_data.cost.suffix
+        console.log(upgrade_cost_text)
         if (upgrade_cost_display.innerHTML != upgrade_cost_text) {
             upgrade_cost_display.innerHTML = upgrade_cost_text
         }
