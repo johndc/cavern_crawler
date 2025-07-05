@@ -6,16 +6,14 @@
 }
 
 *{
-    font-family: "Arial", "Charm";
     color: #FFFFFF;
     text-shadow: black 0px 0px 4px;
     font-size: 18px;
 
-    --page-background-color: #AAAAAF;
+    --page-background-color: #555559;
     --button-normal-color: #77777F;
     --button-highlight-color: #AAAAAF;
     --button-disabled-color: #666669;
-    --main-background-color: #555559;
     --bar-background-color: #333337;
 }
 
@@ -186,12 +184,9 @@ div > .fill_bar {
     margin-right: calc(50% - 384px);
 
     width: 768px;
-    height: calc(98vh);
-    outline: 1px solid black;
 
     border-radius: 4px;
-
-    background-color: var(--main-background-color);
+    background-color: #00000000;
 }
 #title_div {
     padding-top: 4px;
@@ -233,7 +228,12 @@ div > .fill_bar {
     transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
-#start_run_button {
+#currency_display > div {
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+#start_run_button, #prestige_button {
     width: 90%;
 
     height: 32px;

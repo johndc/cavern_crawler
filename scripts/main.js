@@ -1,4 +1,65 @@
 let last_date = Date.now()
+let last_save = 0
+
+let reset_chances = 10
+
+function load_data() {
+    let base_data = {
+        persist: {
+            currencies: {
+                research: 0,
+                prestige_points: 0
+            },
+            upgrades: {
+
+            },
+            unlocks: {
+                upgrades: false,
+                combat: false,
+                extended_upgrades: false,
+                prestige: false,
+                prestige_upgrades: false
+            },
+            layers: {
+                prestige: 0
+            },
+            other: {
+                settings: {
+                    cool_font: true,
+                    hide_complete_upgrades: false
+                },
+                time_played: 0,
+                runs_started: 0,
+
+                records: {
+                    floor: 0
+                }
+            }
+        },
+        non_persist: {
+            run_active: false,
+            run: {
+                floor: 1,
+                progress: 0,
+                move_tick: 0,
+
+                in_combat: false,
+                attack_tick: 0,
+                enemy: null,
+                enemy_kills: 0,
+
+                character_stats: {},
+                enemies: []
+            }
+        }
+    }
+
+    if (localStorage.getItem("save_data") != null) {
+        base_data.persist = JSON.parse(localStorage.getItem("save_data"))
+    }
+
+    return base_data
+}
 
 let string_definitions = {
     "$currency.research": "Research"
@@ -316,6 +377,40 @@ let upgrades_list = {
 
             max_level: 10
         },
+
+        {
+            id: "compound_courage",
+            name: "Mental Endurance",
+            description: "It's mindnumbing how many times you've gone through the caverns. Lose courage slower.",
+            effect: {
+                amount: {
+                    type: "multiply_effect",
+                    value: 0.8,
+                    multiplier: 0.8
+                },
+                prefix: "",
+                suffix: "x Courage Loss"
+            },
+
+            cost: {
+                currency: "research",
+                amount: {
+                    type: "multiply",
+                    value: 20,
+                    multiplier: 1.25
+                },
+                prefix: "",
+                suffix: "Research"
+            },
+            
+            requirements: {
+                unlocks: [
+                    "extended_upgrades"
+                ]
+            },
+
+            max_level: 20
+        },
     ],
 
     combat: [
@@ -596,6 +691,166 @@ let upgrades_list = {
 
             max_level: 10
         },
+    ],
+    prestige: [
+        {
+            id: "prestige_research",
+            name: "P-Research",
+            description: "Gain significantly more research.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 0.5,
+                },
+                prefix: "+",
+                suffix: "x Research"
+            },
+
+            cost: {
+                currency: "prestige_points",
+                amount: {
+                    type: "increment",
+                    value: 1
+                },
+                prefix: "",
+                suffix: "Prestige Points"
+            },
+            
+            requirements: {
+                unlocks: [
+                    "prestige_upgrades"
+                ]
+            },
+
+            max_level: 10
+        },
+        {
+            id: "prestige_courage",
+            name: "P-Courage",
+            description: "Start with significantly more courage.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 0.25,
+                },
+                prefix: "+",
+                suffix: "x Courage"
+            },
+
+            cost: {
+                currency: "prestige_points",
+                amount: {
+                    type: "increment_cost",
+                    value: 1
+                },
+                prefix: "",
+                suffix: "Prestige Points"
+            },
+            
+            requirements: {
+                unlocks: [
+                    "prestige_upgrades"
+                ]
+            },
+
+            max_level: 10
+        },
+        {
+            id: "prestige_courage_loss",
+            name: "P-Courage Retention",
+            description: "Lose courage significantly slower.",
+            effect: {
+                amount: {
+                    type: "multiply_effect",
+                    value: 0.8,
+                    multiplier: 0.8
+                },
+                prefix: "",
+                suffix: "x Courage Loss"
+            },
+
+            cost: {
+                currency: "prestige_points",
+                amount: {
+                    type: "increment_cost",
+                    value: 1
+                },
+                prefix: "",
+                suffix: "Prestige Points"
+            },
+            
+            requirements: {
+                unlocks: [
+                    "prestige_upgrades"
+                ]
+            },
+
+            max_level: 10
+        },
+        {
+            id: "prestige_health",
+            name: "P-Health",
+            description: "Gain exponentially more health.",
+            effect: {
+                amount: {
+                    type: "multiply_effect",
+                    value: 2,
+                    multiplier: 1.75
+                },
+                prefix: "+",
+                suffix: " Health"
+            },
+
+            cost: {
+                currency: "prestige_points",
+                amount: {
+                    type: "increment_cost",
+                    value: 1
+                },
+                prefix: "",
+                suffix: "Prestige Points"
+            },
+            
+            requirements: {
+                unlocks: [
+                    "prestige_upgrades"
+                ]
+            },
+
+            max_level: 10
+        },
+        {
+            id: "prestige_defense",
+            name: "P-Defense",
+            description: "Gain more defense.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 1
+                },
+                prefix: "+",
+                suffix: " Defense"
+            },
+
+            cost: {
+                currency: "prestige_points",
+                amount: {
+                    type: "multiply",
+                    value: 2,
+                    multiplier: 2
+                },
+                prefix: "",
+                suffix: "Prestige Points"
+            },
+            
+            requirements: {
+                unlocks: [
+                    "prestige_upgrades"
+                ]
+            },
+
+            max_level: 10
+        },
     ]
 }
 
@@ -605,6 +860,11 @@ function can_afford_upgrade(data, currency, price) {
 
 function is_upgrade_available(data, upgrade_data) {
     let upgrade_available = true
+
+    if (data.persist.upgrades[upgrade_data.id] >= upgrade_data.max_level && data.persist.other.settings.hide_complete_upgrades == true) {
+        upgrade_available = false
+    }
+
     if (upgrade_data.requirements) {
         if (upgrade_data.requirements.upgrades != null) {
             upgrade_data.requirements.upgrades.forEach((value, _index, _array) => {
@@ -642,6 +902,7 @@ function is_upgrade_available(data, upgrade_data) {
             })
         }
     }
+
     return upgrade_available
 }
 
@@ -742,6 +1003,7 @@ function create_upgrade_buttons(data, list, category) {
             upgrade_effect.innerHTML = "Effect: " + value.effect.prefix + dynamic_eval + " " + value.effect.suffix
         }
         return_table.base_button.appendChild(upgrade_effect)
+        return_table.base_button.appendChild(document.createElement("br"))
 
         let upgrade_cost = document.createElement("div")
         upgrade_cost.className = "upgrade_cost"
@@ -777,7 +1039,6 @@ function create_upgrade_buttons(data, list, category) {
 }
 
 function changetab(tab_name) {
-    document.getElementById("click-sound").play()
     document.querySelectorAll('button[id^=select_tab_]').forEach((tab, _index, _parent) => {
         if (tab.id.endsWith(tab_name)) {
             tab.dataset.selected = true;
@@ -796,7 +1057,6 @@ function changetab(tab_name) {
 }
 
 function changeupgradetab(tab_name) {
-    document.getElementById("click-sound").play()
     document.querySelectorAll('button[id^=upgrade_tab_]').forEach((tab, _index, _parent) => {
         if (tab.id.endsWith(tab_name)) {
             tab.dataset.selected = true;
@@ -812,6 +1072,16 @@ function changeupgradetab(tab_name) {
             tab.style.display = "none";
         }
     })
+}
+
+function prestige_available(data) {
+    if (data.persist.unlocks.prestige != true) {
+        return false
+    }
+    if (data.persist.other.records.floor < 6) {
+        return false
+    }
+    return true
 }
 
 function remove_enemy(data, tile) {
@@ -908,7 +1178,16 @@ function game_tick(data) {
     let time_elapsed = (Date.now() - last_date) / 1000
     last_date = Date.now()
 
+    reset_chances = Math.min(reset_chances + time_elapsed, 10)
+    document.getElementById("reset_data_button").innerHTML = "Reset Data (" + reset_chances.toFixed(0).toString() + ")"
+
+    last_save += time_elapsed
     data.persist.other.time_played = data.persist.other.time_played + time_elapsed;
+
+    if (last_save > 15) {
+        last_save -= 15
+        localStorage.setItem("save_data", JSON.stringify(data.persist))
+    }
 
     if (data.non_persist.run_active == true) {
         last_game_tick += time_elapsed
@@ -947,9 +1226,6 @@ function game_tick(data) {
                             if (data.persist.unlocks.extended_upgrades != true) {
                                 data.persist.unlocks.extended_upgrades = true
                             }
-                        }
-
-                        if (data.non_persist.run.floor > 5) {
                             if (data.persist.unlocks.prestige != true) {
                                 data.persist.unlocks.prestige = true
                             }
@@ -1026,12 +1302,43 @@ function display_tick(data) {
         evaluate_upgrade_button(data, value)
     })
 
+    document.getElementById("font_switcher").innerHTML = (data.persist.other.settings.cool_font == true? "Charm (Default)" : "Monospace")
+    document.getElementById("hide_upgrade_switch").innerHTML = (data.persist.other.settings.hide_complete_upgrades == true? "Yes" : "No")
+
+    if (data.persist.other.settings.cool_font) {
+        document.getElementById("main-style").innerHTML = "* {font-family: 'Charm'};"
+    } else {
+        document.getElementById("main-style").innerHTML = "* {font-family: 'Lucida Console'};"
+    }
+
+    document.getElementById("last_save_display").innerHTML = "Last saved " + last_save.toFixed(1).toString() + "s ago."
+
     document.getElementById("select_tab_prestige").style.display = (data.persist.unlocks.prestige == true? "block" : "none");
 
     document.getElementById("select_tab_upgrades").style.display = (data.persist.unlocks.upgrades == true? "block" : "none");
+
+    document.getElementById("upgrade_tab_prestige").style.display = (data.persist.unlocks.prestige_upgrades == true? "block" : "none");
     document.getElementById("upgrade_tab_combat").style.display = (data.persist.unlocks.combat == true? "block" : "none");
 
     document.getElementById("player_stats_container").style.display = (data.persist.other.runs_started > 0? "inline-block" : "none");
+
+    if (data.persist.unlocks.prestige_upgrades == true) {
+        document.getElementById("prestige_point_display").innerHTML = "Prestige Points: " + data.persist.currencies.prestige_points.toFixed(2).toString()
+    }
+
+    if (data.persist.unlocks.prestige == true) {
+        document.getElementById("prestige_counter").innerHTML = "Prestige " + (data.persist.layers.prestige > 0? data.persist.layers.prestige : 0).toString()
+
+        let prestige_button = document.getElementById("prestige_button")
+
+        if (prestige_available(data)) {
+            prestige_button.innerHTML = "+" + calculate_prestige_reward(data).toFixed(2).toString() + " Prestige Points"
+            prestige_button.removeAttribute("disabled");
+        } else {
+            prestige_button.innerHTML = "Reach Floor 6"
+            prestige_button.setAttribute("disabled", "hi");
+        }
+    }
 
     if (data.persist.unlocks.upgrades) {
         document.getElementById("research_display").innerHTML = "Research: " + data.persist.currencies.research.toFixed(2).toString()
@@ -1076,66 +1383,47 @@ function display_tick(data) {
     }
 }
 
-function start() {
-    let data = {
-        persist: {
-            currencies: {
-                research: 0
-            },
-            upgrades: {
-
-            },
-            unlocks: {
-                upgrades: false,
-                combat: false,
-                extended_upgrades: false
-            },
-            layers: {
-                prestige: 0
-            },
-            other: {
-                settings: {
-
-                },
-                time_played: 0,
-                runs_started: 0,
-
-                records: {
-                    floor: 0
-                }
-            }
-        },
-        non_persist: {
-            run_active: false,
-            run: {
-                floor: 1,
-                progress: 0,
-                move_tick: 0,
-
-                in_combat: false,
-                attack_tick: 0,
-                enemy: null,
-                enemy_kills: 0,
-
-                character_stats: {
-                    courage: 5,
-                    max_courage: 5,
-
-                    health: 5,
-                    max_health: 5,
-
-                    defense: 0,
-                    attack: 0,
-                    move_speed: 1,
-                    attack_speed: 1
-                },
-                enemies: []
-            }
-        }
+function attempt_prestige(data) {
+    if (prestige_available(data) != true) {
+        return
     }
+
+    upgrades_list.basic.forEach((value, _index, _array) => {
+        if (data.persist.upgrades[value.id] != null) {
+            data.persist.upgrades[value.id] = null
+        }
+    })
+
+    upgrades_list.combat.forEach((value, _index, _array) => {
+        if (data.persist.upgrades[value.id] != null) {
+            data.persist.upgrades[value.id] = null
+        }
+    })
+
+    data.persist.unlocks.combat = false;
+    data.persist.unlocks.extended_upgrades = false;
+    data.persist.unlocks.prestige_upgrades = true
+
+    if (data.non_persist.run_active == true) {
+        end_run(data)
+    }
+
+    data.persist.layers.prestige += 1
+    data.persist.currencies.prestige_points += calculate_prestige_reward(data)
+    data.persist.currencies.research = data.persist.layers.prestige * 0.5
+    data.persist.other.records.floor = 0
+
+    changeupgradetab("basic")
+}
+
+
+
+function start() {
+    let data = load_data()
 
     create_upgrade_buttons(data, upgrades_list.basic, "basic")
     create_upgrade_buttons(data, upgrades_list.combat, "combat")
+    create_upgrade_buttons(data, upgrades_list.prestige, "prestige")
 
     if (data.persist.unlocks.upgrades == true) {
         document.getElementById("select_tab_upgrades").style.display = "block";
@@ -1153,6 +1441,29 @@ function start() {
         if (data.non_persist.run_active == false) {
             start_run(data)
         }
+    })
+
+     document.getElementById("reset_data_button").addEventListener("click", (_self, _event) => {
+        reset_chances -= 1
+        if (reset_chances < 1) {
+            reset_chances = 10
+
+            end_run(data)
+            localStorage.removeItem("save_data")
+            window.location.reload()
+        }
+    })
+
+    document.getElementById("prestige_button").addEventListener("click", (_self, _event) => {
+        attempt_prestige(data)
+    })
+
+    document.getElementById("font_switcher").addEventListener("click", (_self, _event) => {
+        data.persist.other.settings.cool_font = !data.persist.other.settings.cool_font
+    })
+
+    document.getElementById("hide_upgrade_switch").addEventListener("click", (_self, _event) => {
+        data.persist.other.settings.hide_complete_upgrades = !data.persist.other.settings.hide_complete_upgrades
     })
 
     changetab("main")

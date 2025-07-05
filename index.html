@@ -1,18 +1,17 @@
 <html>
     <script src="scripts/main.js"></script>
     <script src="scripts/stat_calculator.js"></script>
+    <style id="main-style">
+        * {font-family: 'Charm'};
+    </style>
     <link rel="stylesheet" href="style.css">
-
-    <audio id="click-sound">
-        <source src="sounds/click.wav" type="audio/wav">
-    </audio> 
 
     <body>
         <div id="main_div">
             <div id="title_div">
                 <div id="title-text" style="font-weight: bold;">
                     <span style="--i:0">C</span><span style="--i:1">A</span><span style="--i:2">V</span><span style="--i:3">E</span><span style="--i:4">R</span><span style="--i:5">N</span> <span style="--i:6">C</span><span style="--i:7">R</span><span style="--i:8">A</span><span style="--i:9">W</span><span style="--i:10">L</span><span style="--i:11">E</span><span style="--i:12">R</span>
-                    <span style="--i:13; font-size: 75%; font-weight: bold;">(v0.0.5)</span>
+                    <span style="--i:13; font-size: 75%; font-weight: bold;">(v0.0.6)</span>
                 </div>
             </div>
 
@@ -27,10 +26,9 @@
 
             <div class="seperator"></div>
 
-            <div id="currency_display" style="text-align: center; height: 0px;">
-                <div id="research_display">
-                    
-                </div>
+            <div id="currency_display" style="justify-content: center; height: 0px; display: flex;">
+                <div id="research_display"></div>
+                <div id="prestige_point_display"></div>
             </div>
 
             <div class="seperator"></div>
@@ -96,6 +94,7 @@
                      <div id="game_tab_select_container">
                         <button id="upgrade_tab_basic" class="game_tab_select" data-selected=true onclick="changeupgradetab('basic')">Basic</button>
                         <button id="upgrade_tab_combat" class="game_tab_select" style="display: none;" onclick="changeupgradetab('combat')">Combat</button>
+                        <button id="upgrade_tab_prestige" class="game_tab_select" style="display: none;" onclick="changeupgradetab('prestige')">Prestige</button>
                     </div>
                     
                     <div class="seperator"></div>
@@ -106,15 +105,24 @@
                 </div>
 
                 <div id="tab_prestige" style="display: none;">
-                     <div style="text-align: center;">prestige or something im not your mom</div>
+                    <div id="prestige_counter" style="text-align: center; font-weight: bold;">Prestige 0</div>
+                    <div class="seperator"></div>
+                    <div style="text-align: center;">Lose everything up to this point, But start with an extra <b>0.5 Research per Prestige</b> and gain <b>Prestige Points</b> to use on Prestige Upgrades.</div>
+                    <div class="seperator"></div>
+                    <button id="prestige_button" disabled>Reach Floor 6 to Prestige</button>
                 </div>
 
                 <div id="tab_settings" style="display: none;">
+                    <div id="last_save_display" style="text-align: center;">
+                        Last save: 0 seconds ago.
+                    </div>
+                    <div style="text-align: center;"><button id="reset_data_button">Reset Data (10)</button></div>
+                    <br>
                     <div style="text-align: center;">
-                        Music <input type="checkbox">
+                        Font: <button id="font_switcher">Charm (Default)</button>
                     </div>
                     <div style="text-align: center;">
-                        Dark Mode <input type="checkbox">
+                        Hide Completed Upgrades: <button id="hide_upgrade_switch">False</button>
                     </div>
                 </div>
             </div>

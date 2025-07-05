@@ -18,10 +18,15 @@ function calculate_courage_change(data) {
     // Torch Buff Upgrade
     add_courage_loss *= (data.persist.upgrades.torch_buff1 > 0? 1 - 0.1 * data.persist.upgrades.torch_buff1 : 1)
 
+    // Mental Endurance Upgrade
+    add_courage_loss *= (data.persist.upgrades.compound_courage > 0? Math.pow(0.8, data.persist.upgrades.compound_courage) : 1)
+
     // Well cheers!
     if (data.persist.upgrades.well_cheers != null && (data.non_persist.run.character_stats.courage / data.non_persist.run.character_stats.max_courage) > 0.5) {
         add_courage_loss *= 0.75
     }
+
+    add_courage_loss *= (data.persist.upgrades.prestige_courage_loss > 0? Math.pow(0.8, data.persist.upgrades.prestige_courage_loss) : 1)
 
     if (data.non_persist.run.in_combat) {
         add_courage_loss = 0
@@ -52,6 +57,8 @@ function calculate_health(data) {
     // Endurance Training
     return_health += (data.persist.upgrades.train_endurance > 0? data.persist.upgrades.train_endurance : 0)
 
+    return_health += (data.persist.upgrades.prestige_health > 0? Math.pow(2, data.persist.upgrades.prestige_health) : 0)
+
     return return_health
 }
 
@@ -65,6 +72,8 @@ function calculate_defense(data) {
     if (data.persist.upgrades.feeling_fine != null && (data.non_persist.run.character_stats.health / data.non_persist.run.character_stats.max_health) > 0.5) {
         return_defense += 1
     }
+
+    return_defense += (data.persist.upgrades.prestige_defense > 0? data.persist.upgrades.prestige_defense : 0)
 
     return return_defense
 }
@@ -112,6 +121,8 @@ function calculate_research_gain(data) {
     // Compounding Discoveries
     base_research_gain *= (data.persist.upgrades.compound_research > 0? 1 + (0.1 * data.persist.upgrades.compound_research * (data.non_persist.run.floor - 1)) : 1)
 
+    base_research_gain *= (data.persist.upgrades.prestige_research > 0? 1 + 0.5 * data.persist.upgrades.prestige_research : 1)
+
     return base_research_gain
 }
 
@@ -129,8 +140,14 @@ function evaluate_dynamic_amount(dynamic, level) {
     if (dynamic.type == "increment") {
         return dynamic.value * level;
     }
+    if (dynamic.type == "increment_cost") {
+        return dynamic.value * (level > 0? level : 1);
+    }
     if (dynamic.type == "multiply") {
         return level == 0 ? dynamic.value : dynamic.value * Math.pow(dynamic.multiplier, level);
+    }
+    if (dynamic.type == "multiply_effect") {
+        return level == 0 ? 0 : dynamic.value * Math.pow(dynamic.multiplier, level);
     }
     return null
 }
@@ -141,6 +158,8 @@ function calculate_start_courage(data) {
     return_courage += (data.persist.upgrades.swallow_inhibitions > 0? data.persist.upgrades.swallow_inhibitions : 0)
     return_courage += (data.persist.upgrades.basic_routine > 0? data.persist.upgrades.basic_routine : 0)
 
+    return_courage *= (data.persist.upgrades.prestige_courage > 0? 1 + 0.25 * data.persist.upgrades.prestige_courage : 1)
+
     return return_courage
 }
 
@@ -150,4 +169,10 @@ function calculate_player_stats(data) {
 
     data.non_persist.run.character_stats.max_health = calculate_health(data)
     data.non_persist.run.character_stats.health = data.non_persist.run.character_stats.max_health
+}
+
+function calculate_prestige_reward(data) {
+    let return_prestige = Math.floor((data.persist.other.records.floor - 1) / 5)
+
+    return return_prestige
 }
