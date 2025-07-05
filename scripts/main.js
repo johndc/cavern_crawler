@@ -61,9 +61,11 @@ function load_data() {
     return base_data
 }
 
-let string_definitions = {
-    "$currency.research": "Research"
-}
+let enemy_graphic_order = [
+    "images/enemy_zombie_icon.png",
+    "images/enemy_slime_icon.png",
+    "images/enemy_skeleton_icon.png"
+]
 
 let upgrades_list = {
     basic: [
@@ -498,7 +500,7 @@ let upgrades_list = {
                 amount: {
                     type: "multiply",
                     value: 5,
-                    multiplier: 1.5
+                    multiplier: 1.25
                 },
                 prefix: "",
                 suffix: "Research"
@@ -511,6 +513,47 @@ let upgrades_list = {
             },
 
             max_level: 10
+        },
+
+        {
+            id: "enhance_sword",
+            name: "Enhance Sword",
+            description: "Work on making your blade the best it can be. Further increases attack power.",
+            effect: {
+                amount: {
+                    type: "multiply_effect",
+                    value: 2,
+                    multiplier: 1.25
+                },
+                prefix: "+",
+                suffix: "Attack"
+            },
+
+            cost: {
+                currency: "research",
+                amount: {
+                    type: "multiply",
+                    value: 100,
+                    multiplier: 1.5
+                },
+                prefix: "",
+                suffix: "Research"
+            },
+            
+            requirements: {
+                upgrades: [
+                    {
+                        name: "combat_sword",
+                        amount: 10
+                    }
+                ],
+                unlocks: [
+                    "combat",
+                    "prestige_upgrades"
+                ]
+            },
+
+            max_level: 20
         },
 
         {
@@ -531,7 +574,7 @@ let upgrades_list = {
                 amount: {
                     type: "multiply",
                     value: 10,
-                    multiplier: 2
+                    multiplier: 1.5
                 },
                 prefix: "",
                 suffix: "Research"
@@ -544,6 +587,46 @@ let upgrades_list = {
             },
 
             max_level: 10
+        },
+
+        {
+            id: "enhance_armor",
+            name: "Enhance Armor",
+            description: "Toughen up your armor. Further increases defense.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 2
+                },
+                prefix: "+",
+                suffix: "Defense"
+            },
+
+            cost: {
+                currency: "research",
+                amount: {
+                    type: "multiply",
+                    value: 600,
+                    multiplier: 1.75
+                },
+                prefix: "",
+                suffix: "Research"
+            },
+            
+            requirements: {
+                upgrades: [
+                    {
+                        name: "combat_armor",
+                        amount: 10
+                    }
+                ],
+                unlocks: [
+                    "combat",
+                    "prestige_upgrades"
+                ]
+            },
+
+            max_level: 20
         },
 
         {
@@ -606,6 +689,41 @@ let upgrades_list = {
             requirements: {
                 unlocks: [
                     "combat"
+                ]
+            },
+
+            max_level: 10
+        },
+
+        {
+            id: "slow_recover",
+            name: "Slow Recovery",
+            description: "Regenerate health when outside of combat.",
+            effect: {
+                amount: {
+                    type: "multiply_effect",
+                    value: 0.125,
+                    multiplier: 1.5
+                },
+                prefix: "+",
+                suffix: "Health/s"
+            },
+
+            cost: {
+                currency: "research",
+                amount: {
+                    type: "multiply",
+                    value: 15,
+                    multiplier: 1.5
+                },
+                prefix: "",
+                suffix: "Research"
+            },
+            
+            requirements: {
+                unlocks: [
+                    "combat",
+                    "extended_upgrades"
                 ]
             },
 
@@ -762,8 +880,8 @@ let upgrades_list = {
             effect: {
                 amount: {
                     type: "multiply_effect",
-                    value: 0.8,
-                    multiplier: 0.8
+                    value: 0.875,
+                    multiplier: 0.875
                 },
                 prefix: "",
                 suffix: "x Courage Loss"
@@ -1232,7 +1350,7 @@ function game_tick(data) {
                             }
                         }
 
-                        append_enemy(data, 1, 1 * Math.pow(2, (data.non_persist.run.floor - 1) / 1.2), Math.floor(Math.pow(2, (data.non_persist.run.floor - 1) / 1.67)), Math.floor((data.non_persist.run.floor - 1) / 4), 1, "images/enemy_slime_icon.png")
+                        append_enemy(data, 1, 1 * Math.pow(2, (data.non_persist.run.floor - 1) / 1.2), Math.floor(Math.pow(2, (data.non_persist.run.floor - 1) / 1.67)), Math.floor((data.non_persist.run.floor - 1) / 4), 1, enemy_graphic_order[(data.non_persist.run.floor - 1) % enemy_graphic_order.length])
                     }
                     
                     data.non_persist.run.enemies.forEach((value, _index, _array) => {
@@ -1414,6 +1532,7 @@ function attempt_prestige(data) {
     data.persist.currencies.research = data.persist.layers.prestige * 0.5
     data.persist.other.records.floor = 0
 
+    document.getElementById("floor_record_text").innerHTML = ""
     changeupgradetab("basic")
 }
 

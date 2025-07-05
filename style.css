@@ -200,7 +200,7 @@ div > .fill_bar {
 #title-text span {
     display: inline-block;
     font-size: 150%;
-    animation: text_wave 10s infinite;
+    animation: text_wave 7.5s infinite;
     animation-timing-function: linear;
     animation-delay: calc(-0.5s * var(--i));
 }

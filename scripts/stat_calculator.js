@@ -26,7 +26,7 @@ function calculate_courage_change(data) {
         add_courage_loss *= 0.75
     }
 
-    add_courage_loss *= (data.persist.upgrades.prestige_courage_loss > 0? Math.pow(0.8, data.persist.upgrades.prestige_courage_loss) : 1)
+    add_courage_loss *= (data.persist.upgrades.prestige_courage_loss > 0? Math.pow(0.875, data.persist.upgrades.prestige_courage_loss) : 1)
 
     if (data.non_persist.run.in_combat) {
         add_courage_loss = 0
@@ -47,6 +47,8 @@ function calculate_health_change(data) {
     if (data.persist.upgrades.well_cheers != null && (data.non_persist.run.character_stats.courage / data.non_persist.run.character_stats.max_courage) > 0.5) {
         health_change += 0.05 * data.persist.upgrades.well_cheers
     }
+
+    health_change += (data.persist.upgrades.slow_recover > 0 && data.non_persist.run.in_combat == false? 0.125 * Math.pow(1.5, data.persist.upgrades.slow_recover) : 0)
 
     return health_change
 }
@@ -75,6 +77,8 @@ function calculate_defense(data) {
 
     return_defense += (data.persist.upgrades.prestige_defense > 0? data.persist.upgrades.prestige_defense : 0)
 
+    return_defense += (data.persist.upgrades.enhance_armor > 0? 2 * data.persist.upgrades.enhance_armor : 0)
+
     return return_defense
 }
 
@@ -83,6 +87,8 @@ function calculate_attack(data) {
 
     // Combat Sword
     return_attack += (data.persist.upgrades.combat_sword > 0? data.persist.upgrades.combat_sword : 0)
+
+    return_attack += (data.persist.upgrades.enhance_sword > 0? 2 * Math.pow(1.25, data.persist.upgrades.enhance_sword) : 0)
 
     return return_attack
 }
