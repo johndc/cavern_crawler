@@ -913,7 +913,7 @@ let upgrades_list = {
                 amount: {
                     type: "multiply_effect",
                     value: 2,
-                    multiplier: 1.75
+                    multiplier: 1.625
                 },
                 prefix: "+",
                 suffix: " Health"
@@ -955,7 +955,7 @@ let upgrades_list = {
                 amount: {
                     type: "multiply",
                     value: 2,
-                    multiplier: 2
+                    multiplier: 1.5
                 },
                 prefix: "",
                 suffix: "Prestige Points"
