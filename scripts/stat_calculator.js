@@ -8,9 +8,9 @@ function calculate_courage_change(data) {
     add_courage_loss += (data.persist.upgrades.torch == 1? 0.25 : 0) + (data.persist.upgrades.torch_buff > 0? 0.05 * data.persist.upgrades.torch_buff : 0)
 
     // Combat Upgrades
-    add_courage_loss *= (data.persist.upgrades.combat_sword == 1? 0.9 : 1)
-    add_courage_loss *= (data.persist.upgrades.combat_armor == 1? 0.9 : 1)
-    add_courage_loss *= (data.persist.upgrades.combat_boots == 1? 0.9 : 1)
+    add_courage_loss *= (data.persist.upgrades.combat_sword >= 1? 0.9 : 1)
+    add_courage_loss *= (data.persist.upgrades.combat_armor >= 1? 0.9 : 1)
+    add_courage_loss *= (data.persist.upgrades.combat_boots >= 1? 0.9 : 1)
 
     // Careful Looking Nerf
     add_courage_loss *= (data.persist.upgrades.careful_looking == 1? 1.1 : 1)
